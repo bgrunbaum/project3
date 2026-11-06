@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sea-Surface Warming Trend</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="viz-root">
+    <h1>How much has the surface warmed?</h1>
+    <p class="subtitle" id="subtitle">Linear SST trend, 1850–2014</p>
+
+    <div class="controls">
+      <button id="play" type="button" aria-label="Play">▶</button>
+      <label class="slider">
+        <span>End year <strong id="year-label">2014</strong></span>
+        <input id="year" type="range" min="1851" max="2014" step="1" value="2014">
+      </label>
+      <div class="toggle" role="radiogroup" aria-label="Units">
+        <label><input type="radio" name="mode" value="rate" checked> °C / decade</label>
+        <label><input type="radio" name="mode" value="total"> Total change (°C)</label>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <canvas id="map"></canvas>
+      <svg id="map-axes"></svg>
+      <div id="tooltip" class="tooltip" hidden></div>
+    </div>
+
+    <div class="legend">
+      <svg id="legend"></svg>
+      <span class="legend-land"><i></i> land</span>
+    </div>
+
+    <p class="note" id="note"></p>
+
+
+    <p class="source">MIROC6 historical (r5i1p1f1), sea-surface temperature <code>tos</code>, annual means, 2°×2° cells.
+      Each frame fits a straight line through every year from 1850 to the selected end year. The color scale is fixed for all years.</p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
