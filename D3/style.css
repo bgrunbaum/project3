@@ -94,3 +94,10 @@ h2 { font-size: 15px; margin: 28px 0 6px; }
 
 .source { color: var(--text-muted); font-size: 12px; margin-top: 20px; }
 code { font-size: 0.95em; }
+
+.zoom-btns { position: absolute; top: 8px; right: 8px; z-index: 1; display: flex; flex-direction: column; gap: 4px; }
+.zoom-btns button {
+  width: 28px; height: 28px; border: 1px solid var(--grid); border-radius: 6px;
+  background: var(--surface-1); color: var(--text-primary); font-size: 15px; line-height: 1; cursor: pointer;
+}
+.hint { color: var(--text-muted); font-size: 12px; margin: 6px 0 0; }

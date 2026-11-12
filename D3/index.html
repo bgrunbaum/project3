@@ -3,44 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sea-Surface Warming Trend</title>
+  <title>Sea-Surface Temperature</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="viz-root">
-    <h1>How much has the surface warmed?</h1>
-    <p class="subtitle" id="subtitle">Linear SST trend, 1850–2014</p>
+    <h1>How warm is the ocean surface?</h1>
+    <p class="subtitle" id="subtitle" aria-live="polite">Sea-surface temperature in 2014</p>
 
     <div class="controls">
       <button id="play" type="button" aria-label="Play">▶</button>
       <label class="slider">
-        <span>End year <strong id="year-label">2014</strong></span>
-        <input id="year" type="range" min="1851" max="2014" step="1" value="2014">
+        <span>Year <strong id="year-label">2014</strong></span>
+        <input id="year" type="range" min="1850" max="2014" step="1" value="2014">
       </label>
-      <div class="toggle" role="radiogroup" aria-label="Units">
-        <label><input type="radio" name="mode" value="rate" checked> °C / decade</label>
-        <label><input type="radio" name="mode" value="total"> Total change (°C)</label>
+      <div class="toggle" role="radiogroup" aria-label="Map type">
+        <label><input type="radio" name="mode" value="temp" checked> Temperature (°C)</label>
+        <label><input type="radio" name="mode" value="anom"> Change since 1850–1900</label>
       </div>
     </div>
 
     <div class="map-wrap">
-      <canvas id="map"></canvas>
+      <canvas id="map" role="img" aria-label="Map of sea-surface temperature for the selected year"></canvas>
       <svg id="map-axes"></svg>
+      <div class="zoom-btns">
+        <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+        <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+        <button id="zoom-reset" type="button" aria-label="Reset view">⟲</button>
+      </div>
       <div id="tooltip" class="tooltip" hidden></div>
     </div>
+    <p class="hint">Drag to pan · Ctrl/⌘ + scroll, pinch, or double-click to zoom</p>
 
     <div class="legend">
       <svg id="legend"></svg>
       <span class="legend-land"><i></i> land</span>
     </div>
 
-    <p class="note" id="note"></p>
+    <p class="note" id="note" aria-live="polite"></p>
 
-
-    <p class="source">MIROC6 historical (r5i1p1f1), sea-surface temperature <code>tos</code>, annual means, 2°×2° cells.
-      Each frame fits a straight line through every year from 1850 to the selected end year. The color scale is fixed for all years.</p>
+    <p class="source">MIROC6 historical (r5i1p1f1), sea-surface temperature <code>tos</code>, annual means.
+      Model simulation, not observations. Colors are interpolated between grid cells for display;
+      the color scale is fixed for all years. The mapped-ocean mean covers 80°S–63°N only.</p>
   </main>
 
+  <noscript>This visualization needs JavaScript.</noscript>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="main.js"></script>
 </body>

@@ -1,78 +1,73 @@
 """
-Export SST-trend maps for the D3 slider (Plot 2).
+Export annual sea-surface temperature maps for the D3 slider (Plot 2).
 
-For every end year Y (1851..2014) and every ocean grid cell, fit a straight line
-to annual-mean SST over 1850..Y and save the slope (°C per decade).
+For every year 1850..2014 and every ocean grid cell, save the annual-mean SST.
 
-Data: MIROC6 historical r5i1p1f1 (same run as the notebook), variable `tos`
-(sea-surface temperature). We use `tos` instead of `thetao.isel(lev=0)` because
-thetao is chunked with all 63 depth levels together, so reading just the surface
-would still download ~46 GB; `tos` is ~730 MB.
+Data: MIROC6 historical r5i1p1f1, variable `tos`. (`tos` instead of
+`thetao.isel(lev=0)`, which would download ~46 GB.)
 
 Output (in D3/data/):
-  sst_trend.bin   int16, shape (n_years, ny, nx), slope in milli-°C/decade, -32768 = land
-  sst_meta.json   grid coordinates, years, global-mean series
+  sst.bin        int16, shape (n_years, ny, nx), SST in centi-°C, -32768 = land
+  sst_meta.json  grid coordinates, years, mapped-ocean mean series
 
 Run from the project root:  python3 D3/export_sst_trend.py
 """
 import json
 from pathlib import Path
 
+import dask
 import gcsfs
 import numpy as np
 import xarray as xr
+from dask.diagnostics import ProgressBar
 
-OUT = Path(__file__).parent / "data"
+# 1 = native grid (~1 deg, smoother, ~25 MB). 2 = 2 deg grid (~6 MB, blurrier).
+COARSEN = 1
+
+try:
+    HERE = Path(__file__).parent          # running as a script
+except NameError:
+    HERE = Path(".")                       # running in a notebook (e.g. Colab)
+OUT = HERE / "data"
 OUT.mkdir(exist_ok=True)
 
 STORE = "gs://cmip6/CMIP6/CMIP/MIROC/MIROC6/historical/r5i1p1f1/Omon/tos/gn/v20181212/"
 ds = xr.open_zarr(gcsfs.GCSFileSystem(token="anon").get_mapper(STORE), consolidated=True)
 
-# Annual means (165, y, x). Downloads ~730 MB.
 print("loading tos ...")
-sst = ds.tos.groupby("time.year").mean("time").load()
+# The download is network-latency bound, so read many chunks in parallel.
+with dask.config.set(scheduler="threads", num_workers=32), ProgressBar():
+    sst = ds.tos.groupby("time.year").mean("time").load()      # (165, y, x)
 
-# Same map fixes as the notebook: longitude = x + 60, and y is latitude only south of ~63°N.
+# Same map fixes as before: longitude = x + 60, y is latitude only south of ~63N.
 sst = sst.assign_coords(x=(sst.x + 60) % 360).sortby("x")
 sst = sst.sel(y=slice(-80, 63))
-# 2x2 coarsening keeps the file small (~6 MB) while still looking like a map.
-sst = sst.coarsen(x=2, y=2, boundary="trim").mean()
+if COARSEN > 1:
+    sst = sst.coarsen(x=COARSEN, y=COARSEN, boundary="trim").mean()
 
-years = sst.year.values.astype(float)            # 1850..2014
-v = sst.values.astype(np.float64)                # (T, ny, nx)
-T = len(years)
+years = sst.year.values.astype(int)                             # 1850..2014
+v = sst.values.astype(np.float64)                               # (T, ny, nx), deg C
+if np.nanmax(v) > 100:                                          # Kelvin guard
+    v -= 273.15
+print("SST range:", np.nanmin(v), np.nanmax(v))
 
-# Running least-squares slope for every end index k using cumulative sums:
-# slope_k = (n*Sty - St*Sy) / (n*Stt - St^2), sums over years[0..k]
-t = (years - years[0])[:, None, None]
-n = np.arange(1, T + 1)[:, None, None].astype(float)
-St = np.cumsum(t, axis=0)
-Stt = np.cumsum(t**2, axis=0)
-Sy = np.cumsum(v, axis=0)
-Sty = np.cumsum(t * v, axis=0)
-with np.errstate(invalid="ignore", divide="ignore"):
-    slope = (n * Sty - St * Sy) / (n * Stt - St**2)   # °C / year
-slope = slope[1:] * 10                                 # drop Y=1850 (one point); °C / decade
-end_years = years[1:].astype(int)
+# Cos-latitude weighted mean over the mapped ocean (80S-63N only, not truly global).
+w = np.cos(np.deg2rad(sst.y.values))[None, :, None] * np.ones_like(v)
+w = np.where(np.isnan(v), 0, w)
+gmean = np.nansum(v * w, axis=(1, 2)) / w.sum(axis=(1, 2))
 
-# Global mean (cos-latitude weighted) of the slope for each end year.
-w = np.cos(np.deg2rad(sst.y.values))[None, :, None] * np.ones_like(slope)
-w = np.where(np.isnan(slope), 0, w)
-gmean = np.nansum(slope * w, axis=(1, 2)) / w.sum(axis=(1, 2))
-
-q = np.clip(np.round(slope * 1000), -32767, 32767)
-q = np.where(np.isnan(slope), -32768, q).astype("<i2")
-q.tofile(OUT / "sst_trend.bin")
+q = np.where(np.isnan(v), -32768, np.clip(np.round(v * 100), -32767, 32767)).astype("<i2")
+q.tofile(OUT / "sst.bin")
 
 meta = {
-    "source": "MIROC6 historical r5i1p1f1, tos (annual mean), 2x2 coarsened",
+    "source": f"MIROC6 historical r5i1p1f1, tos (annual mean), coarsen={COARSEN}",
     "start_year": int(years[0]),
-    "years": end_years.tolist(),
+    "years": years.tolist(),
     "x": np.round(sst.x.values, 3).tolist(),
     "y": np.round(sst.y.values, 3).tolist(),
-    "scale": 1000,
+    "scale": 100,
     "fill": -32768,
-    "global_mean_trend": np.round(gmean, 4).tolist(),
+    "global_mean": np.round(gmean, 4).tolist(),
 }
 (OUT / "sst_meta.json").write_text(json.dumps(meta))
-print("wrote", q.shape, (OUT / "sst_trend.bin").stat().st_size / 1e6, "MB")
+print("wrote", q.shape, (OUT / "sst.bin").stat().st_size / 1e6, "MB")
