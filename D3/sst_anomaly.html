@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ocean Surface Warming Map</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="anomaly.css">
+</head>
+<body>
+  <main class="viz-root wide">
+    <h1>Where has the ocean surface warmed?</h1>
+    <p class="subtitle" id="subtitle">Sea-surface temperature anomaly</p>
+
+    <div class="controls">
+      <div class="toggle" role="radiogroup" aria-label="View">
+        <label><input type="radio" name="view" value="temp" checked> Ocean temperature</label>
+        <label><input type="radio" name="view" value="ice" id="view-ice"> Arctic sea ice</label>
+      </div>
+      <div class="toggle" role="radiogroup" aria-label="Averaging window">
+        <span>Average over</span>
+        <label><input type="radio" name="win" value="1"> 1 year</label>
+        <label><input type="radio" name="win" value="5"> 5 years</label>
+        <label><input type="radio" name="win" value="10" checked> 10 years</label>
+      </div>
+
+      <button id="play" type="button" aria-label="Play">▶</button>
+      <label class="slider">
+        <span>Year <strong id="year-label">2014</strong></span>
+        <input id="year" type="range" min="1850" max="2014" step="1" value="2014">
+      </label>
+      <div class="zoom-buttons">
+        <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+        <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+        <button id="zoom-reset" type="button">Reset</button>
+      </div>
+    </div>
+
+    <div class="regions" id="regions"><span>Jump to:</span></div>
+    <p class="hint">Drag the map to pan · double-click or use + / − to zoom · ⌘/Ctrl + scroll also zooms · click the timeline to change the year</p>
+
+    <div class="map-wrap" id="map-wrap">
+      <canvas id="map"></canvas>
+      <svg id="map-axes"></svg>
+      <div id="tooltip" class="tooltip" hidden></div>
+    </div>
+
+    <svg id="timeline"></svg>
+
+    <div class="legend">
+      <svg id="legend"></svg>
+      <span class="legend-land"><i></i> land / no data</span>
+    </div>
+
+    <p class="note" id="note"></p>
+
+    <p class="source">
+      MIROC6 historical simulation (run r5i1p1f1), smoothed between model cells for readability. Simulated climate-model output, not observations.<br>
+      <strong>Temperature view:</strong> annual-mean sea-surface temperature (<code>tos</code>) on a 1°×1° grid, minus each cell's own 1850–1900 average. Fixed color scale (±2 °C).<br>
+      <strong>Sea-ice view:</strong> September mean sea-ice concentration (<code>siconc</code>) north of 50°N; the timeline shows the estimated ice area. Coastlines: Natural Earth.
+    </p>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="sst_anomaly.js"></script>
+</body>
+</html>

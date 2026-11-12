@@ -1,0 +1,40 @@
+/* Wider layout for the anomaly map; loaded after style.css */
+.viz-root.wide { max-width: none; padding: 16px 24px 24px; }
+
+/* colors for the sea-ice view (open water → full ice) */
+:root { --ice-open: #1d4f91; --ice-full: #e3ecf7; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ice-open: #14345c; --ice-full: #dbe8f6; }
+}
+:root[data-theme="dark"] { --ice-open: #14345c; --ice-full: #dbe8f6; }
+
+.hint { margin: 0 0 10px; color: var(--text-muted); font-size: 12px; }
+
+.zoom-buttons { display: flex; gap: 6px; }
+.zoom-buttons button {
+  min-width: 36px; height: 36px; padding: 0 10px; border-radius: 18px;
+  border: 1px solid var(--grid); background: transparent; color: var(--text-primary);
+  font-size: 15px; cursor: pointer;
+}
+.zoom-buttons button:hover { background: var(--grid); }
+
+.regions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 0 8px; color: var(--text-secondary); }
+.regions button {
+  height: 30px; padding: 0 12px; border-radius: 15px;
+  border: 1px solid var(--grid); background: transparent; color: var(--text-primary);
+  font-size: 13px; cursor: pointer;
+}
+.regions button:hover { background: var(--grid); }
+
+#map { cursor: grab; touch-action: none; }
+#map:active { cursor: grabbing; }
+
+/* latitude rings and longitude spokes in the polar view */
+.polar-line { fill: none; stroke: var(--text-muted); stroke-opacity: 0.35; }
+.polar-label {
+  fill: var(--text-muted); font-size: 11px;
+  paint-order: stroke; stroke: var(--surface-1); stroke-width: 3px;
+}
+
+#timeline { display: block; margin: 8px 0 0 34px; overflow: visible; cursor: pointer; }
+#timeline text { fill: var(--text-muted); font-size: 10px; }
