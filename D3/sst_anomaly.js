@@ -282,12 +282,16 @@ function render() {
   if (ice) { drawPolar(); drawPolarAxes(); }
   else { drawTemperature(); drawAxes(); }
 
-  const when = state.win > 1 ? `${y0}–${y1} average` : `${y1}`;
+  // text above the map
+  const when = state.win > 1 ? `${y0}–${y1} average` : `${y1}`;      // short form, used by the tooltips
+  const span = state.win > 1 ? `${y0}–${y1}` : `${y1}`;
   document.getElementById("year-label").textContent = meta.years[k];
   document.getElementById("subtitle").textContent = ice
-    ? `Arctic sea-ice concentration in September, ${when} · estimated ice area ${d3.mean(iceMeta.area.slice(k0, k1 + 1)).toFixed(1)} million km²`
-    : `Sea-surface temperature, ${when}, vs. the ${meta.baseline[0]}–${meta.baseline[1]} average · ` +
-      `global ocean mean ${fmt(d3.mean(meta.global_mean.slice(k0, k1 + 1)))} °C`;
+    ? `Arctic sea ice in September ${state.win > 1 ? `(${span} average)` : span} · ` +
+      `ice-covered area about ${d3.mean(iceMeta.area.slice(k0, k1 + 1)).toFixed(1)} million km²`
+    : `Ocean surface temperature ${state.win > 1 ? `averaged over ${span}` : `in ${span}`}, ` +
+      `compared with ${meta.baseline[0]}–${meta.baseline[1]} · ` +
+      `whole-ocean change: ${fmt(d3.mean(meta.global_mean.slice(k0, k1 + 1)))} °C`;
 
   renderLegend();
   updateMarker();
