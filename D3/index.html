@@ -9,12 +9,21 @@
 <body>
   <main class="viz-root">
     <h1>How much has the surface warmed?</h1>
-    <p class="subtitle" id="subtitle">Linear SST trend, 1850–2014</p>
+    <p class="subtitle" id="subtitle">Linear SST trend over a 30-year window, 1985–2014</p>
 
     <div class="controls">
       <button id="play" type="button" aria-label="Play">▶</button>
+      <label class="window">
+        <span>Window</span>
+        <select id="window">
+          <option value="20">20 years</option>
+          <option value="30" selected>30 years</option>
+          <option value="50">50 years</option>
+          <option value="all">Since 1850</option>
+        </select>
+      </label>
       <label class="slider">
-        <span>End year <strong id="year-label">2014</strong></span>
+        <span>Years in fit <strong id="year-label">1985–2014</strong></span>
         <input id="year" type="range" min="1851" max="2014" step="1" value="2014">
       </label>
       <div class="toggle" role="radiogroup" aria-label="Units">
@@ -36,9 +45,21 @@
 
     <p class="note" id="note"></p>
 
+    <section class="series">
+      <div class="series-head">
+        <h2 id="series-title">Global-mean SST</h2>
+        <button id="clear-cell" type="button" hidden>Back to global mean</button>
+      </div>
+      <p class="series-sub" id="series-sub"></p>
+      <svg id="series" role="img" aria-label="Annual SST time series with the fitted trend line over the selected window"></svg>
+      <p class="hint">Click any ocean cell on the map to see its yearly SST. Drag the shaded window to move it through time.</p>
+    </section>
+
 
     <p class="source">MIROC6 historical (r5i1p1f1), sea-surface temperature <code>tos</code>, annual means, 2°×2° cells.
-      Each frame fits a straight line through every year from 1850 to the selected end year. The color scale is fixed for all years.</p>
+      Each frame fits a least-squares line to the annual SST of every ocean cell over the selected window; the slider moves the window's last year.
+      The global mean is weighted by cos(latitude). The color scale is fixed while the window slides, and changes only with window length,
+      because shorter windows have larger (noisier) trends. The model grid is not a regular latitude/longitude grid north of 63°N, so the Arctic is not shown.</p>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
