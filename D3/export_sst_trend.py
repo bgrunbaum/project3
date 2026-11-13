@@ -36,7 +36,7 @@ sst = ds.tos.groupby("time.year").mean("time").load()
 sst = sst.assign_coords(x=(sst.x + 60) % 360).sortby("x")
 sst = sst.sel(y=slice(-80, 63))
 # 2x2 coarsening keeps the file small (~6 MB) while still looking like a map.
-sst = sst.coarsen(x=2, y=2, boundary="trim").mean()
+#sst = sst.coarsen(x=2, y=2, boundary="trim").mean()
 
 years = sst.year.values.astype(float)            # 1850..2014
 v = sst.values.astype(np.float64)                # (T, ny, nx)
