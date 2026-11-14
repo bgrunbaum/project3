@@ -94,3 +94,5 @@ h2 { font-size: 15px; margin: 28px 0 6px; }
 
 .source { color: var(--text-muted); font-size: 12px; margin-top: 20px; }
 code { font-size: 0.95em; }
+
+.hint { margin: -10px 0 14px; color: var(--text-muted); font-size: 12px; }
