@@ -8,10 +8,8 @@
 </head>
 <body>
   <main class="viz-root">
-    <h1>How much has the sea surface warmed?</h1>
-    <p class="subtitle" id="subtitle">Per-cell linear trend of annual-mean SST, fitted over 1850–2014</p>
-    <p class="hint">Scroll or pinch to zoom · drag the map to pan · double-click or press Reset zoom to start over</p>
-
+    <h1>How has climate change affected sea surface temperature?</h1>
+    <h2 class="subtitle" id="subtitle">A per-cell linear trend of annual-mean SST, fitted over 1850–2014</h2>
     <div class="controls">
       <button id="play" type="button" aria-label="Play">▶</button>
       <label class="slider">
@@ -24,25 +22,65 @@
       </div>
     </div>
     <p class="hint">Adjust the threshold to highlight areas warming at or above that rate. Cells below it fade out; the percentage is the share of ocean area (weighted by latitude) at or above it.</p>
+     <p class="hint">Scroll or pinch to zoom · drag to pan · double-click or use the ⟲ button to reset</p>
     <div class="map-wrap">
-      <canvas id="map"></canvas>
-      <svg id="map-axes"></svg>
-      <div id="tooltip" class="tooltip" hidden></div>
+    <canvas id="map"></canvas>
+    <svg id="map-axes"></svg>
+    <div class="zoom-controls">
+      <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+      <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+      <button type="button" id="zoom-reset" aria-label="Reset zoom">⟲</button>
     </div>
+    <div id="tooltip" class="tooltip" hidden></div>
+  </div>
+  
 
     <div class="legend">
       <svg id="legend"></svg>
       <span class="legend-land"><i></i> land</span>
+
+     
     </div>
 
     <p class="note" id="note"></p>
 
-    <p class="source"><strong>Data:</strong> MIROC6 historical run (r5i1p1f1), sea-surface temperature (<code>tos</code>), on the model's native grid of about 1°×1° cells.<br>
-      <strong>Transformations:</strong> Monthly values are averaged into annual means. Land cells are excluded, and the map is cropped to 80°S–63°N, where the model grid lines up with latitude.
-      For each end year, a straight line is fitted through every annual value from 1850 to that year, and its slope is reported in °C per decade. "Total change" multiplies that trend by the length of the window.
-      The global mean and the "% of ocean area" readout weight each cell by cos(latitude), so the smaller high-latitude cells don't count too much.
-      The color scale is fixed across years and clamped at ±0.1 °C/decade (±1 °C for total change).</p>
+    <p class="source"><strong>Data:</strong> MIROC6 historical run (r5i1p1f1), sea-surface temperature (<code>tos</code>), on the model's native grid of about 1°×1° cells.</p>
+
+<p class="source"><strong>Transformations:</strong> Monthly values are averaged into annual means. Land cells are excluded, and the map is cropped to 80°S–63°N, where the model grid lines up with latitude.
+  For each end year, a straight line is fitted through every annual value from 1850 to that year, and its slope is reported in °C per decade. "Total change" multiplies that trend by the length of the window.
+  The global mean and the "% of ocean area" readout weight each cell by cos(latitude), so the smaller high-latitude cells don't count too much.
+  The color scale is fixed across years and clamped at ±0.1 °C/decade (±1 °C for total change).</p>
+
+  <p class="source">We chose to visualize sea surface temperature since we thought it was a particularly prescient indictator of
+    how climate change is affecting our world, as sea surface temperature has direct implications for El Nino and other meteorological phenonmenon that 
+    can increase warm temperatures and storm frequency. As we looked at the data and did exploratory static visualizations, we found that 
+    the most effective method of displaying our temperature data would be on a map showing the trend in temperature change, as it can more effectively show 
+    the changes in temperature to the user and where it is changing most. 
+  </p>
+
+  <p class="source">The sea surface temperature data was measured per latitude and longtitude (so that each cell observed on the map is one 
+    degree wide and long), and for each cell, the sea surface temperature was taken monthly. To better communicate our data, we compacted those 
+  monthly values into an annual mean for each cell, and then for each end year (by default, 2014, but it can be altered), a straight line is fitted through 
+  every annual value from 1850 to that year, and its slope is reported in °C per decade. This slope is essentially the rate at which that cell's sea surface temperature
+  has changed over the past x number of years. "Total change" multiplies that trend by how many years are in the total timespan.</p>
+
+  <p class="source">In terms of our visual encodings and the colors we chose, we hoped to make our visualization as intuitive as possible for the user 
+    to understand. Therefore, we chose a gradient scale of dark red to dark blue to represent extremely warm changes and extremely cold (respectively) changes in temperature (given in degrees Celsius per decade),
+    with stagnant/limited changes being represented by white and lighter values of red and blue. We understand that the map still appears a bit pixelated; unfortunately, that 
+    is due to the nature of the latitude and longtitude data but we are exploring how to potentially use existing map data (such as from MapWorks) to better
+    unify the map in our Final Project.
+  </p>
+
+  <p class="source">Finally, we wanted to consider how we can best make this visualization interactive. When we were making our static visualizations, such as one 
+    where we looked at the overall change in sea surface temperature, we found it insightful but it touched on a very broad area (from 1850-2014). We wanted to give 
+    viewers the ability to look at a certain time era (as accomplished by the slider), to be able to zoom and inspect an individual cell (as done by the tooltip and zoom functions), 
+    and to also be able to filter to look at what areas have been warmed by a certain degree (as done with the input filter box). 
+  </p>
+  
+
   </main>
+
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="main.js"></script>

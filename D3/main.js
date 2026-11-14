@@ -25,6 +25,17 @@ const zoom = d3.zoom()
   .scaleExtent([1, MAX_ZOOM])
   .on("zoom", (e) => { transform = e.transform; draw(); });
 
+const mapSel = d3.select('#map');
+
+d3.select('#zoom-in').on('click', () =>
+  mapSel.transition().duration(200).call(zoom.scaleBy, 1.5));
+
+d3.select('#zoom-out').on('click', () =>
+  mapSel.transition().duration(200).call(zoom.scaleBy, 1 / 1.5));
+
+d3.select('#zoom-reset').on('click', () =>
+  mapSel.transition().duration(300).call(zoom.transform, d3.zoomIdentity));
+
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 Promise.all([
@@ -90,7 +101,7 @@ function init() {
   d3.select(canvas).call(zoom).on("dblclick.zoom", null)   // double-click is easy to hit by accident
     .on("dblclick", () => resetZoom());
 
-  setupResetButton();
+
   setupFilter();
   setupMapHover();
   new ResizeObserver(() => { layout(); render(); }).observe(document.querySelector(".map-wrap"));
@@ -98,15 +109,7 @@ function init() {
 }
 
 // "Reset zoom" button: uses #reset-zoom if the HTML has one, otherwise adds it to .controls.
-function setupResetButton() {
-  let btn = document.getElementById("reset-zoom");
-  if (!btn) {
-    btn = document.createElement("button");
-    btn.id = "reset-zoom"; btn.type = "button"; btn.textContent = "Reset zoom";
-    document.querySelector(".controls").appendChild(btn);
-  }
-  btn.addEventListener("click", resetZoom);
-}
+
 function resetZoom() {
   d3.select(ctx.canvas).transition().duration(400).call(zoom.transform, d3.zoomIdentity);
 }
