@@ -9,7 +9,7 @@
 <body>
   <main class="viz-root">
     <h1>How much has the sea surface warmed?</h1>
-    <p class="subtitle" id="subtitle">Linear SST trend, 1850–2014</p>
+    <p class="subtitle" id="subtitle">Per-cell linear trend of annual-mean SST, fitted over 1850–2014</p>
     <p class="hint">Scroll or pinch to zoom · drag the map to pan · double-click or press Reset zoom to start over</p>
 
     <div class="controls">
@@ -23,7 +23,7 @@
         <label><input type="radio" name="mode" value="total"> Total change (°C)</label>
       </div>
     </div>
-    <p class="hint">Adjust the threshold to highlight areas warming at or above that rate. Other areas will fade out.</p>
+    <p class="hint">Adjust the threshold to highlight areas warming at or above that rate. Cells below it fade out; the percentage is the share of ocean area (weighted by latitude) at or above it.</p>
     <div class="map-wrap">
       <canvas id="map"></canvas>
       <svg id="map-axes"></svg>
@@ -37,8 +37,11 @@
 
     <p class="note" id="note"></p>
 
-    <p class="source">MIROC6 historical (r5i1p1f1), sea-surface temperature <code>tos</code>, annual means, on the model's native grid of about 1°×1° cells.
-      Each frame fits a straight line through every year from 1850 to the selected end year. The color scale is fixed for all years.</p>
+    <p class="source"><strong>Data:</strong> MIROC6 historical run (r5i1p1f1), sea-surface temperature (<code>tos</code>), on the model's native grid of about 1°×1° cells.<br>
+      <strong>Transformations:</strong> Monthly values are averaged into annual means. Land cells are excluded, and the map is cropped to 80°S–63°N, where the model grid lines up with latitude.
+      For each end year, a straight line is fitted through every annual value from 1850 to that year, and its slope is reported in °C per decade. "Total change" multiplies that trend by the length of the window.
+      The global mean and the "% of ocean area" readout weight each cell by cos(latitude), so the smaller high-latitude cells don't count too much.
+      The color scale is fixed across years and clamped at ±0.1 °C/decade (±1 °C for total change).</p>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>

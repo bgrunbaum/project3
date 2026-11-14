@@ -277,7 +277,7 @@ function render() {
   const g = globalMean(k);
   document.getElementById("year-label").textContent = year;
   document.getElementById("subtitle").textContent =
-    `Linear SST trend, ${meta.start_year}–${year} · global mean ${mode.fmt(g)} ${mode.unit}`;
+    `Per-cell linear trend of annual-mean SST, fitted over ${meta.start_year}–${year} · area-weighted global mean ${mode.fmt(g)} ${mode.unit}`;
   const n = year - meta.start_year + 1;
   document.getElementById("note").textContent = n < NOISY_WINDOW
     ? `Only ${n} years in this fit — short-window trends are mostly year-to-year noise, so many cells hit the end of the color scale.`

@@ -35,7 +35,8 @@ sst = ds.tos.groupby("time.year").mean("time").load()
 # Same map fixes as the notebook: longitude = x + 60, and y is latitude only south of ~63°N.
 sst = sst.assign_coords(x=(sst.x + 60) % 360).sortby("x")
 sst = sst.sel(y=slice(-80, 63))
-# 2x2 coarsening keeps the file small (~6 MB) while still looking like a map.
+# No coarsening: we keep the native ~1° grid. (2x2 coarsening would shrink the file
+# to ~6 MB; uncomment below and update "source" in meta if you want that.)
 #sst = sst.coarsen(x=2, y=2, boundary="trim").mean()
 
 years = sst.year.values.astype(float)            # 1850..2014
@@ -65,7 +66,7 @@ q = np.where(np.isnan(slope), -32768, q).astype("<i2")
 q.tofile(OUT / "sst_trend.bin")
 
 meta = {
-    "source": "MIROC6 historical r5i1p1f1, tos (annual mean), 2x2 coarsened",
+    "source": "MIROC6 historical r5i1p1f1, tos (annual mean), native ~1° grid",
     "start_year": int(years[0]),
     "years": end_years.tolist(),
     "x": np.round(sst.x.values, 3).tolist(),
