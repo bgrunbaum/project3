@@ -8,8 +8,9 @@
 </head>
 <body>
   <main class="viz-root">
-    <h1>How much has the surface warmed?</h1>
+    <h1>How much has the sea surface warmed?</h1>
     <p class="subtitle" id="subtitle">Linear SST trend, 1850–2014</p>
+    <p class="hint">Scroll or pinch to zoom · drag the map to pan · double-click or press Reset zoom to start over</p>
 
     <div class="controls">
       <button id="play" type="button" aria-label="Play">▶</button>
@@ -22,7 +23,7 @@
         <label><input type="radio" name="mode" value="total"> Total change (°C)</label>
       </div>
     </div>
-
+    <p class="hint">Adjust "Highlight cells ≥" to highlight areas warming at or above that rate. Other areas will fade out.</p>
     <div class="map-wrap">
       <canvas id="map"></canvas>
       <svg id="map-axes"></svg>
@@ -36,8 +37,7 @@
 
     <p class="note" id="note"></p>
 
-
-    <p class="source">MIROC6 historical (r5i1p1f1), sea-surface temperature <code>tos</code>, annual means, 2°×2° cells.
+    <p class="source">MIROC6 historical (r5i1p1f1), sea-surface temperature <code>tos</code>, annual means, on the model's native grid of about 1°×1° cells.
       Each frame fits a straight line through every year from 1850 to the selected end year. The color scale is fixed for all years.</p>
   </main>
 
